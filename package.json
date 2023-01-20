@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "csv": "^6.2.5",
+    "mongodb": "^4.13.0",
+    "mongoose": "^6.8.4",
+    "moongose": "^1.0.0",
+    "node": "^19.4.0"
+  }
+}
