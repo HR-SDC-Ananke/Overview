@@ -1,9 +1,21 @@
 {
+  "scripts": {
+    "server-dev": "node server/index.js",
+    "test": "jest "
+  },
   "dependencies": {
     "csv": "^6.2.5",
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.4",
+    "mongoose-execution-time": "^1.0.2",
     "moongose": "^1.0.0",
-    "node": "^19.4.0"
+    "node": "^19.4.0",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1"
   }
+
+
+
 }

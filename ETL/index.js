@@ -102,7 +102,7 @@ fs.createReadStream('./CSV/product.csv')
       read_sku()
     })
     .on("error", function (error) {
-      console.log(error.message);
+      console.log(error.message, "photos");
     });
 
   }
