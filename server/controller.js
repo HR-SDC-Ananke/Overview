@@ -2,6 +2,7 @@
 
 const { find } = require('../db')
 const db = require('../db/index')
+const db2 = require('../db/second_index')
 
 var style = (product) =>{
   for(var i = 0 ; i <= product.styles.length-1; i++){
@@ -58,7 +59,14 @@ const product = async (req,res) => {
 
 
 exports.cart = async (req, res) => {
-  var addToCart = await db.add_to_cart(req.body)
+  console.log(req.body)
+  if(req.body.sku_id <4){
+    var addToCart = await db2.add_to_cart(req.body)
+  }
+  // } else{
+  //   var addToCart = await db.add_to_cart(req.body)
+  // }
+
   console.log("after ")
   res.send()
 }
