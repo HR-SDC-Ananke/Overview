@@ -1,4 +1,5 @@
 
+
 const { find } = require('../db')
 const db = require('../db/index')
 
@@ -58,6 +59,7 @@ const product = async (req,res) => {
 
 exports.cart = async (req, res) => {
   var addToCart = await db.add_to_cart(req.body)
+  console.log("after ")
   res.send()
 }
 

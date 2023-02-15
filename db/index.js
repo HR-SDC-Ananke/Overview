@@ -1,7 +1,9 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
-mongoose.connect('mongodb://3.235.103.102/atelier');// defaults to port 27017
+cart_shard_1 = mongoose.createConnection('mongodb://54.197.79.57:27017/shard')
+main_db = mongoose.createConnection('mongodb://3.235.103.102:27017/atelier');// defaults to port 27017
+
 const { logExecutionTime, LoggerVerbosity } = require('mongoose-execution-time');
 
 mongoose.plugin(logExecutionTime, {
@@ -22,12 +24,13 @@ const productSchema = new Schema({
 })
 
 const cartSchema = new Schema({
-  sku_id: {type: Number, unique: true},
+  sku_id: {type: Number},
   count: Number
 })
 
-const productModel = mongoose.model('Product', productSchema  )
-const cartModel = mongoose.model('Cart', cartSchema)
+const productModel = main_db.model('Product', productSchema  )
+const main_cartModel = main_db.model('Cart', cartSchema)
+const shard_cartModel = cart_shard_1.model('Cart', cartSchema)
 
 
 const add_product = async (product) =>{
@@ -46,26 +49,49 @@ const find = async (id) =>{
 }
 
 module.exports.add_to_cart = async (new_sku_id) =>{
-  console.log(new_sku_id)
-  sku= await cartModel.find({sku_id: new_sku_id.sku_id}).exec()
-  console.log("db sku", sku)
-  if(sku.length === 0){
-    console.log("no")
-    sku = new cartModel({sku_id : new_sku_id.sku_id, count: 1})
-    console.log(sku)
-    return sku.save()
-      .then((result) =>{
-        console.log(result, "result")
-      })
+  if(Object.keys(new_sku_id).length === 0) {console.log("null"); return}
+
+  if(new_sku_id.sku_id < 4){
+    var con = main_cartModel
   } else{
-    console.log('yes')
-    var new_count = sku[0].count + 1
-    console.log(new_count)
-    sku = await cartModel.findOneAndUpdate({sku_id: new_sku_id.sku_id}, {count:new_count })
+    var con = shard_cartModel
   }
+  // sku= await con.find({sku_id: new_sku_id.sku_id})
+  // console.log("db sku", new_sku_id)
+  // console.log("sku", sku)
 
+  // if(sku.length === 0 ){
+  //   console.log("no")
+  //   sku = new con({sku_id : new_sku_id.sku_id, count: 1})
+  //   console.log(sku)
+  //   temp = await sku.save()
+  //   return
+  // } else{
+  //   console.log('yes')
+  //   var new_count = sku[0].count + 1
+  //   console.log(new_count)
+  //   sku = await con.findOneAndUpdate({sku_id: new_sku_id.sku_id}, {count:new_count })
+  // }
 
+  con.find({sku_id: new_sku_id.sku_id})
+  .exec(async function (err, cart) {
+    console.log("first cart", cart)
+    if(cart.length > 0){
+      console.log("cart", cart)
+      new_count = cart[0].count + 1
+      console.log("new count", new_count)
+      temp = await con.findOneAndUpdate({sku_id: new_sku_id.sku_id}, {count:new_count })
+    } else{
+      sku = new con({sku_id : new_sku_id.sku_id, count: 1})
+      sku.save()
+       .catch((err)=>{
+        console.log(err, "err")
+       })
+      console.log("hello")
+    }
+});
 }
+
 
 
 
