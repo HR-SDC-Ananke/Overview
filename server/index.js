@@ -19,6 +19,12 @@ app.get('/products/:id/styles', product.product)
 app.get('/products/:id', product.product)
 app.post('/add_cart', product.cart)
 
+app.get(`/loaderio-11abd307d55ab3738346da3c3d2c3939`,  (req, res) => {
+  console.log("hi")
+
+   res.send('loaderio-11abd307d55ab3738346da3c3d2c3939');
+ });
+
 
 
 var server = app.listen(port, () => console.log(`Listening on port ${port}`))
